@@ -23,10 +23,8 @@ function makeBoard() {
 /** makeHtmlBoard: make HTML table and row of column tops. */
 
 function makeHtmlBoard() {
-  // TODO: get "htmlBoard" variable from the item in HTML w/ID of "board"
   let htmlBoard = document.getElementById("board");
 
-  // TODO: add comment for this code
   // create a clickable top row with cells with id of 0 through WIDTH - 1
   let top = document.createElement("tr");
   top.setAttribute("id", "column-top");
@@ -39,7 +37,6 @@ function makeHtmlBoard() {
   }
   htmlBoard.append(top);
 
-  // TODO: add comment for this code
   // create all table cells with id of 0-0 though HEIGHT-1 - WIDTH-1
   for (var y = 0; y < HEIGHT; y++) {
     const row = document.createElement("tr");
@@ -55,8 +52,9 @@ function makeHtmlBoard() {
 /** findSpotForCol: given column x, return top empty y (null if filled) */
 
 function findSpotForCol(x) {
-  // TODO: write the real version of this, rather than always returning 0
   for (let y = HEIGHT-1; y > -1; y--) {
+    console.log(x, y);
+    console.log(board[x][y]);
     if ( board[x][y] == null ) {
       return y;
     }
@@ -67,7 +65,6 @@ function findSpotForCol(x) {
 /** placeInTable: update DOM to place piece into HTML table of board */
 
 function placeInTable(y, x) {
-  // TODO: make a div and insert into correct table cell
   const piece = document.createElement("div");
   let cl = 1 == currPlayer ? "player1" : "player2";
   piece.classList.add( cl );
@@ -80,7 +77,6 @@ function placeInTable(y, x) {
 /** endGame: announce game end */
 
 function endGame(msg) {
-  // TODO: pop up alert message
   alert( msg );
 }
 
@@ -88,10 +84,12 @@ function endGame(msg) {
 
 function handleClick(evt) {
   // get x from ID of clicked cell
-  var x = +evt.target.id;
+  let x = +evt.target.id;
+  // sometimes when spam clicking, x is NaN
+  if (x == NaN ) {return;}
 
   // get next spot in column (if none, ignore click)
-  var y = findSpotForCol(x);
+  let y = findSpotForCol(x);
   if (y === null) {
     return;
   }
@@ -100,13 +98,6 @@ function handleClick(evt) {
   // TODO: add line to update in-memory board
   placeInTable(y, x);
   board[x][y] = currPlayer;
-  for (var y = 0; y < HEIGHT; y++) {
-    let row = [];
-    for (var x = 0; x < WIDTH; x++) {
-      row.push( board[x][y] );
-    }
-    console.log(row);
-  }
 
   // check for win
   if (checkForWin()) {
@@ -114,8 +105,7 @@ function handleClick(evt) {
   }
 
   // check for tie
-  // TODO: check if all cells in board are filled; if so call, call endGame
-  // simply checks top row if it is empty
+  // simply checks top row if it is empty for tie
   let isDraw = true;
   for (let i = 0; i < WIDTH - 1; i++) {
     if ( board[i][0] == null ) { 
@@ -150,14 +140,13 @@ function checkForWin() {
     );
   }
 
-  // TODO: read and understand this code. Add comments to help you.
   // brute force checks all 4 directions at all positions on the board.
-  for (var y = 0; y < HEIGHT; y++) {
-    for (var x = 0; x < WIDTH; x++) {
-      var horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
-      var vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x]];
-      var diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]];
-      var diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3]];
+  for (let y = 0; y < HEIGHT; y++) {
+    for (let x = 0; x < WIDTH; x++) {
+      let horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
+      let vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x]];
+      let diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]];
+      let diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3]];
 
       if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
         return true;
