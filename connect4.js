@@ -27,8 +27,8 @@ function makeHtmlBoard() {
 
   // create a clickable top row with cells with id of 0 through WIDTH - 1
   let top = document.createElement("tr");
-  top.setAttribute("id", "column-top");
-  top.addEventListener("click", handleClick);
+  top.setAttribute("id", "row-top");
+  top.addEventListener("mousedown", handleClick);
 
   for (let x = 0; x < WIDTH; x++) {
     let headCell = document.createElement("td");
@@ -84,9 +84,8 @@ function endGame(msg) {
 
 function handleClick(evt) {
   // get x from ID of clicked cell
+  // + implicit logic converts string to integer
   let x = +evt.target.id;
-  // sometimes when spam clicking, x is NaN
-  if (x == NaN ) {return;}
 
   // get next spot in column (if none, ignore click)
   let y = findSpotForCol(x);
@@ -95,31 +94,10 @@ function handleClick(evt) {
   }
 
   // place piece in board and add to HTML table
-  // TODO: add line to update in-memory board
   placeInTable(y, x);
   board[x][y] = currPlayer;
 
-  // check for win
-  if (checkForWin()) {
-    return endGame(`Player ${currPlayer} won!`);
-  }
-
-  // check for tie
-  // simply checks top row if it is empty for tie
-  let isDraw = true;
-  for (let i = 0; i < WIDTH - 1; i++) {
-    if ( board[i][0] == null ) { 
-      isDraw = false;
-      break; 
-    }
-  }
-  if ( isDraw ) {
-    return endGame("This is a draw");
-  }
-
-  // switch players
-  // TODO: switch currPlayer 1 <-> 2
-  currPlayer = 1 == currPlayer ? 2 : 1;
+  checkForEnd();
 }
 
 /** checkForWin: check board cell-by-cell for "does a win start here?" */
@@ -153,6 +131,29 @@ function checkForWin() {
       }
     }
   }
+}
+
+function checkForEnd() {
+  // check for win
+  if (checkForWin()) {
+    return endGame(`Player ${currPlayer} won!`);
+  }
+
+  // check for tie
+  // simply checks top row if it is empty for tie
+  let isDraw = true;
+  for (let i = 0; i < WIDTH - 1; i++) {
+    if ( board[i][0] == null ) { 
+      isDraw = false;
+      break; 
+    }
+  }
+  if ( isDraw ) {
+    return endGame("This is a draw");
+  }
+
+  // switch players
+  currPlayer = 1 == currPlayer ? 2 : 1;
 }
 
 makeBoard();
